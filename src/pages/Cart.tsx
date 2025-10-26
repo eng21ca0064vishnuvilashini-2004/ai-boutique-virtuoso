@@ -61,7 +61,10 @@ const Cart = () => {
   });
 
   const total = cartItems?.reduce(
-    (sum, item) => sum + Number((item.products as any).price) * item.quantity,
+    (sum, item) => {
+      if (!item.products) return sum;
+      return sum + Number((item.products as any).price) * item.quantity;
+    },
     0
   ) || 0;
 
@@ -96,17 +99,17 @@ const Cart = () => {
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
-              {cartItems?.map((item) => (
+              {cartItems?.filter(item => item.products).map((item) => (
                 <Card key={item.id} className="p-6">
                   <div className="flex gap-6">
                     <img
-                      src={(item.products as any).images?.[0] || "/placeholder.svg"}
-                      alt={(item.products as any).name}
+                      src={(item.products as any)?.images?.[0] || "/placeholder.svg"}
+                      alt={(item.products as any)?.name || "Product"}
                       className="w-24 h-32 object-cover rounded-lg"
                     />
                     <div className="flex-1">
                       <h3 className="font-semibold text-lg mb-2">
-                        {(item.products as any).name}
+                        {(item.products as any)?.name || "Product"}
                       </h3>
                       {item.size && (
                         <p className="text-sm text-muted-foreground">Size: {item.size}</p>
@@ -115,7 +118,7 @@ const Cart = () => {
                         <p className="text-sm text-muted-foreground">Color: {item.color}</p>
                       )}
                       <p className="text-lg font-bold text-primary mt-2">
-                        ${(item.products as any).price}
+                        ${(item.products as any)?.price || "0.00"}
                       </p>
                     </div>
                     <div className="flex flex-col items-end justify-between">
